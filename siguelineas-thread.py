@@ -1,13 +1,22 @@
+#!/usr/bin/env python3
+# coding=utf-8
+
+import os
+from ev3dev2.motor import OUTPUT_A, OUTPUT_D, MoveTank
+from ev3dev2.sensor import Sensor
+from time import sleep
+from threading import Thread
+
 class SigueLineasThread(Thread):
     """
-    Hilo encargado de seguir la línea negra sin salirse
+    Hilo encargado de seguir la linea negra sin salirse
 
     Atributos:
         lecturas (list): Lecturas del sensor LSA
-        pesos (list): Pesos con los que pondera la posición de la línea, cuanto más en los extremos mayor valor
-        vel_min, vel_max (int): Velocidades mínimas y máximas que puede asignar a los servomotres
+        pesos (list): Pesos con los que pondera la posicion de la linea, cuanto mas en los extremos mayor valor
+        vel_min, vel_max (int): Velocidades minimas y maximas que puede asignar a los servomotres
 
-    Métodos:
+    Metodos:
         binario: Recibe las lecturas de LSA y devuelve una lista de binarios diciendo si hay linea o no. <90 hay linea
     """
     
@@ -24,7 +33,7 @@ class SigueLineasThread(Thread):
 
     def readLSA(lsa):
         """
-        Función para leer las ocho lecturas del sensor LSA
+        Funcion para leer las ocho lecturas del sensor LSA
 
         Args:
             lsa (Sensor): Objeto de tipo sensor
@@ -39,7 +48,7 @@ class SigueLineasThread(Thread):
 
     def binario(self, lecturas):
         """
-        Función para convertir los valores LSA en una lista binaria
+        Funcion para convertir los valores LSA en una lista binaria
 
         Args:
             lecturas (list): Lecturas del sensor LSA
@@ -55,10 +64,10 @@ class SigueLineasThread(Thread):
 
     def f(self, x):
         """
-        Esta es la función que utilizamos para calcular a que velocidad debemos de poner los servomotores
+        Esta es la funcion que utilizamos para calcular a que velocidad debemos de poner los servomotores
 
         Args:
-            x (float): Es un número entre 1-7 que nos indica que posición del sensor está detectando la línea. Ejemplo, 3.5 línea en el medio
+            x (float): Es un nnmero entre 1-7 que nos indica que posicion del sensor está detectando la linea. Ejemplo, 3.5 linea en el medio
         """
         # Calculamos una velocidad que depende de x, que depende de vel_min y vel_max
         if x < 3.0:
@@ -73,12 +82,12 @@ class SigueLineasThread(Thread):
             binarios = self.binario(lecturas)
             resultado = [a * b for a, b in zip(binarios, self.pesos)]
 
-            # Verificamos si hay alguna línea detectada (1 en la lista binaria)
+            # Verificamos si hay alguna linea detectada (1 en la lista binaria)
             if sum(binarios) != 0:
-                # Calculamos la posición promedio de la línea detectada
+                # Calculamos la posicion promedio de la linea detectada
                 posicion = sum(resultado) / sum(binarios)
              
-            # Calculamos la velocidad de cada motor usando la posición de la línea
+            # Calculamos la velocidad de cada motor usando la posicion de la linea
 
             # Velocidad del motor izquierdo
             self.vl = f(posicion)
@@ -96,7 +105,7 @@ def main():
     # Creamos los hilos
     siguelineas_thread = SigueLineasThread(1, lsa)
 
-    siguelineas_thread.setDaemon() = True
+    siguelineas_thread.setDaemon = True
 
     # Arrancamos los hilos
     siguelineas_thread.start()
